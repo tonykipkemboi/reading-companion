@@ -1,0 +1,116 @@
+{
+  "name": "reading-companion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A small desktop browser with a reading companion: highlight anything on any website and have it explained in place. Powered by Nebius Token Factory.",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test:smoke": "node scripts/smoke.mjs",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist": "npm run dist:mac && npm run dist:win && npm run dist:linux",
+    "dist:mac:test": "electron-builder --mac -c.mac.identity=- -c.mac.hardenedRuntime=false -c.mac.notarize=false -c.electronFuses.enableNodeCliInspectArguments=true -c.electronFuses.enableCookieEncryption=false -c.directories.output=dist-test"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "dompurify": "^3.2.0",
+    "marked": "^18.2.0",
+    "openai": "^7.56.0"
+  },
+  "devDependencies": {
+    "electron": "^45.3.2",
+    "electron-builder": "^26.18.0",
+    "playwright-core": "^1.65.0"
+  },
+  "productName": "Reading Companion",
+  "build": {
+    "appId": "app.readingcompanion.desktop",
+    "productName": "Reading Companion",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**",
+      "assets/**",
+      "package.json"
+    ],
+    "artifactName": "Reading-Companion-${version}-${os}-${arch}.${ext}",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.png",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "Reading Companion"
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "shortcutName": "Reading Companion"
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "synopsis": "Highlight anything on any website and have it explained in place.",
+      "maintainer": "Reading Companion contributors",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "desktop": {
+        "entry": {
+          "StartupWMClass": "Reading Companion"
+        }
+      }
+    },
+    "electronFuses": {
+      "runAsNode": false,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true,
+      "enableCookieEncryption": true
+    }
+  },
+  "author": {
+    "name": "Reading Companion contributors"
+  },
+  "homepage": "https://tokenfactory.nebius.com"
+}

@@ -1,0 +1,105 @@
+/* The app's own look, light throughout. Four colours with jobs: evergreen (text and
+   outlines), pink (the highlighter and anything you press), mint (tabs, toolbar, notes,
+   home), white (wells and pages).
+   Shapes follow the companions: flat fills, a dark outline, a hard offset shadow.
+   Text is set in Atkinson Hyperlegible, a face drawn for easy reading; headings in
+   Bricolage Grotesque. Change the identity here; nothing else hardcodes it. */
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  src: url('../../node_modules/@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  src: url('../../node_modules/@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2') format('woff2-variations');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque Variable';
+  src: url('../../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Evergreen is the ink: text, outlines and hard shadows. The app is light throughout,
+     so these defaults are the light ones; nothing sets light text on a dark ground. */
+  --ink-rgb: 9, 30, 25;
+  --ink: #091e19;
+  --text: var(--ink);
+  --text-2: rgba(9, 30, 25, 0.76);
+  --text-3: rgba(9, 30, 25, 0.56);
+  --line: rgba(9, 30, 25, 0.16);
+  --line-strong: rgba(9, 30, 25, 0.36);
+  --surface-0: #ffffff;
+  --surface-1: var(--paper);
+  --surface-2: var(--mint-deep);
+  --surface-3: var(--mint-deep);
+
+  /* Mint: the app's own surfaces (tabs, toolbar, notes, home) */
+  --paper: #e6f5ec;
+  --paper-raised: #ffffff;
+
+  /* Pink: the highlighter, evergreen's complement. Mint: the quiet secondary. */
+  --accent-rgb: 255, 122, 184;
+  --accent: #ff7ab8;
+  --on-accent: #091e19;
+  --action: #ff7ab8;
+  --on-action: #091e19;
+  --soft: #8de5c0;
+  --mint-deep: #cdeadb;
+  --focus-ring: 0 0 0 3px rgba(255, 122, 184, 0.45);
+
+  /* Call-to-action button: pink on evergreen, evergreen on mint */
+  --cta-bg: var(--accent);
+  --cta-fg: var(--on-accent);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --page-padding-x: 32px;
+
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 10px;
+  --radius-card: 14px;
+  --radius-pill: 100px;
+
+  /* The sticker treatment used by everything that floats over a page */
+  --outline: 2px solid var(--ink);
+  --hard-sm: 3px 3px 0 var(--ink);
+  --hard: 5px 5px 0 var(--ink);
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.18);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.32), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.24);
+  --shadow-overlay: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-paper: 0 1px 2px rgba(9, 30, 25, 0.06), 0 8px 24px rgba(9, 30, 25, 0.08);
+
+  --transition-fast: 120ms ease;
+
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --font-ui: 'Atkinson Hyperlegible Next Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-page: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.h3 { font-size: 24px; line-height: 1.2; font-weight: 600; }
+.h4 { font-size: 17px; line-height: 1.25; font-weight: 600; }
+.body-lg { font-size: 18px; line-height: 1.6; font-weight: 400; }
+.body-sm { font-size: 14px; line-height: 1.55; font-weight: 400; }

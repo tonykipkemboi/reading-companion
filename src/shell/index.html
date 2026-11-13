@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'">
+  <title>Reading companion</title>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav id="tabs" aria-label="Tabs">
+    <div id="tab-list" role="tablist"></div>
+    <button class="icon-btn" id="tab-new" title="New tab"><i class="icon" data-icon="plus"></i></button>
+  </nav>
+
+  <header id="bar">
+    <div class="bar-nav">
+      <button class="icon-btn" id="nav-back" title="Back" disabled><i class="icon" data-icon="arrow-left"></i></button>
+      <button class="icon-btn" id="nav-forward" title="Forward" disabled><i class="icon" data-icon="arrow-right"></i></button>
+      <button class="icon-btn" id="nav-reload" title="Reload"><i class="icon" data-icon="arrow-rotate-right"></i></button>
+      <button class="icon-btn" id="nav-home" title="Home"><i class="icon" data-icon="house"></i></button>
+    </div>
+
+    <form id="address" autocomplete="off">
+      <i class="icon address-icon" data-icon="globe"></i>
+      <input id="url" type="text" spellcheck="false" placeholder="Search or enter a website" aria-label="Website address">
+    </form>
+
+    <div class="bar-tools">
+      <button class="tool-btn" id="tool-snip" title="Snip a picture, chart or any region"><i class="icon" data-icon="crop"></i><span>Snip</span></button>
+      <button class="tool-btn" id="tool-ask" title="Ask about this page"><i class="icon" data-icon="comment"></i><span>Ask</span></button>
+      <button class="tool-btn" id="tool-notes" title="Notes on this page" disabled><i class="icon" data-icon="comments"></i><span>Notes</span><b id="notes-count" hidden>0</b></button>
+    </div>
+    <button class="tool-btn key-btn" id="key-btn" title="Explanations need an API key" hidden><i class="icon" data-icon="circle-exclamation"></i><span>Add API key</span></button>
+
+    <a id="powered" href="#" title="Nebius Token Factory">
+      <span>Powered by</span>
+      <img src="../../assets/powered-by/nebius-token-factory-light.svg" alt="Nebius Token Factory">
+    </a>
+    <div id="progress"></div>
+  </header>
+
+  <main id="stage">
+    <!-- One <webview class="view"> per tab is added here by app.js. -->
+
+    <section id="load-error" hidden>
+      <div class="error-card">
+        <i class="icon" data-icon="triangle-exclamation"></i>
+        <h2 class="h3">That page did not open</h2>
+        <p class="body-sm" id="load-error-text"></p>
+        <button class="btn btn-primary" id="load-error-retry">Try again</button>
+      </div>
+    </section>
+
+    <section id="home">
+      <div class="home-center">
+        <button class="home-mascot" id="home-mascot" type="button" title="Change companion"></button>
+        <form id="home-form" autocomplete="off">
+          <input id="home-url" type="text" spellcheck="false" placeholder="Search or paste a link" aria-label="Search or website address">
+          <button class="btn" type="submit">Open</button>
+        </form>
+        <p class="home-hint">Then highlight anything you want explained.</p>
+        <div id="home-status"></div>
+        <div class="home-recent" id="home-recent" hidden>
+          <div id="recent-list"></div>
+        </div>
+      </div>
+
+      <footer class="home-foot">
+        <button class="link-btn" id="home-companion" type="button">Companion: <span data-mascot-name>Quippy</span></button>
+        <button class="link-btn" id="home-settings" type="button">API key and settings</button>
+      </footer>
+
+      <div id="pick-pop" hidden>
+        <div class="pick-row" id="pick-row"></div>
+      </div>
+    </section>
+
+    <div id="overlay">
+      <div id="region-outline" hidden></div>
+      <div id="markers"></div>
+      <button id="imgchip" type="button" hidden><i class="icon" data-icon="picture"></i><span>Explain picture</span></button>
+
+      <div id="pill" hidden>
+        <button class="pill-btn pill-primary" data-action="explain">Explain</button>
+        <button class="pill-btn" data-action="simplify">Simplify</button>
+        <button class="pill-btn" data-action="ask">Ask</button>
+      </div>
+
+      <!-- The same three choices, for words highlighted inside one of the companion's answers. -->
+      <div id="reply-pill" hidden>
+        <button class="pill-btn pill-primary" data-reply="explain">Explain</button>
+        <button class="pill-btn" data-reply="simplify">Simplify</button>
+        <button class="pill-btn" data-reply="ask">Ask</button>
+      </div>
+
+      <section id="bubble" hidden>
+        <div class="bubble-tail"></div>
+        <header class="bubble-head">
+          <span class="bubble-name" data-mascot-name>Quippy</span>
+          <span class="bubble-status" id="bubble-status"></span>
+          <span class="bubble-spacer"></span>
+          <button class="icon-btn small" id="bubble-copy" title="Copy answer"><i class="icon" data-icon="copy"></i></button>
+          <button class="icon-btn small" id="bubble-remove" title="Delete this note"><i class="icon" data-icon="trash-bin"></i></button>
+          <button class="icon-btn small" id="bubble-close" title="Close and keep as a note"><i class="icon" data-icon="xmark"></i></button>
+        </header>
+        <div class="bubble-focus" id="bubble-focus"></div>
+        <div class="bubble-body" id="bubble-body"></div>
+        <div class="bubble-chips" id="bubble-chips"></div>
+        <div class="bubble-quote" id="bubble-quote" hidden>
+          <span id="bubble-quote-text"></span>
+          <button type="button" id="bubble-quote-clear" title="Remove"><i class="icon" data-icon="xmark"></i></button>
+        </div>
+        <div class="bubble-attachments" id="bubble-attachments"></div>
+        <form class="bubble-form" id="bubble-form">
+          <button class="attach-btn" id="bubble-snip" type="button" title="Snip part of the page into this chat"><i class="icon" data-icon="crop"></i></button>
+          <button class="attach-btn" id="bubble-upload" type="button" title="Add a picture or screenshot"><i class="icon" data-icon="picture"></i></button>
+          <input id="bubble-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+          <textarea id="bubble-input" rows="1" placeholder="Ask a follow-up"></textarea>
+          <button class="send-btn" id="bubble-send" type="submit" title="Send"><i class="icon" data-icon="arrow-up"></i></button>
+        </form>
+        <footer class="bubble-foot" id="bubble-foot"></footer>
+      </section>
+
+      <section id="notes-panel" hidden>
+        <header class="notes-head">
+          <h2>Notes on this page</h2>
+          <button class="text-btn" id="notes-clear" type="button">Clear all</button>
+        </header>
+        <div id="notes-list"></div>
+      </section>
+
+      <div id="tip" hidden></div>
+
+      <div id="mascot" data-state="idle" title="Ask about this page">
+        <div class="mascot-thought"><i></i><i></i><i></i></div>
+        <div class="mascot-zzz"><b>z</b><b>z</b></div>
+        <div class="mascot-art" id="mascot-art"></div>
+      </div>
+
+      <div id="snip" hidden>
+        <div class="snip-hint">Drag over a picture, chart or anything else. Esc to cancel.</div>
+        <div class="snip-box" id="snip-box" hidden></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Shown at launch, and whenever an explanation is asked for, while no API key is set. -->
+  <div id="keygate" hidden>
+    <section class="keygate-card" role="dialog" aria-modal="true" aria-labelledby="keygate-title">
+      <div class="keygate-mascot" id="keygate-mascot" data-state="notice"></div>
+      <h2 id="keygate-title">Add your Nebius key to switch on explanations</h2>
+      <p class="keygate-lead">Explanations are written by a model on Nebius Token Factory, and it needs your API key. Until then the app is only a browser.</p>
+      <ol class="keygate-steps">
+        <li><span>Create a key on Token Factory.</span> <button class="link-btn" id="keygate-get" type="button">Open tokenfactory.nebius.com</button></li>
+        <li><span>Copy the key.</span></li>
+        <li><span>Come back here and press "Use the key I copied".</span></li>
+      </ol>
+      <p class="keygate-status" id="keygate-status" role="status"></p>
+      <div class="keygate-actions">
+        <button class="btn btn-primary" id="keygate-paste" type="button">Use the key I copied</button>
+        <button class="btn btn-quiet" id="keygate-file" type="button">Open settings file instead</button>
+        <button class="link-btn" id="keygate-later" type="button">Not now</button>
+      </div>
+      <p class="keygate-fine">Your key is saved on this computer only, in the app's settings file, and is sent to Nebius and nowhere else. When you ask a question, the text and address of the page you are on go to Nebius too, so it can write the answer.</p>
+    </section>
+  </div>
+
+  <script src="../../node_modules/marked/lib/marked.umd.js"></script>
+  <script src="../../node_modules/dompurify/dist/purify.min.js"></script>
+  <script src="mascots.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

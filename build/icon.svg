@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- App icon: Quippy on a mint tile, with the same outline and hard shadow the app uses. -->
+  <rect x="100" y="100" width="824" height="824" rx="186" fill="#E6F5EC"/>
+  <rect x="104" y="104" width="816" height="816" rx="182" fill="none" stroke="#091E19" stroke-width="8"/>
+  <g transform="translate(212 222) scale(6.25)">
+    <path d="M22 11h52a14 14 0 0 1 14 14v31a14 14 0 0 1-14 14H50L32.6 86.2a2.4 2.4 0 0 1-4.1-1.7V70H22A14 14 0 0 1 8 56V25a14 14 0 0 1 14-14z"
+          transform="translate(4.5 5.5)" fill="#091E19" stroke="#091E19" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M22 11h52a14 14 0 0 1 14 14v31a14 14 0 0 1-14 14H50L32.6 86.2a2.4 2.4 0 0 1-4.1-1.7V70H22A14 14 0 0 1 8 56V25a14 14 0 0 1 14-14z"
+          fill="#FF7AB8" stroke="#091E19" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M15.5 31v-5.5a8 8 0 0 1 8 -8H34" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>
+    <g fill="#F0468F" fill-opacity=".5">
+      <ellipse cx="26" cy="49.5" rx="4.8" ry="3"/>
+      <ellipse cx="70" cy="49.5" rx="4.8" ry="3"/>
+    </g>
+    <ellipse cx="35" cy="37" rx="6" ry="8.5" fill="#091E19"/><circle cx="37" cy="33.5" r="2.3" fill="#fff"/>
+    <ellipse cx="61" cy="37" rx="6" ry="8.5" fill="#091E19"/><circle cx="63" cy="33.5" r="2.3" fill="#fff"/>
+    <path d="M41 53q7 6.5 14 0" fill="none" stroke="#091E19" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+</svg>
