@@ -291,3 +291,14 @@ of a cent. Screenshots land in `.smoke/`.
   Open Font License, installed from Fontsource.
 - Icons: [Gravity UI](https://gravity-ui.com/icons), MIT (notice in `assets/icons/LICENSE`).
 - The Nebius Token Factory logo belongs to Nebius and is used here as a "powered by" mark.
+
+## Licence
+
+The code is under the [MIT licence](LICENSE). Three things in this repo keep their own
+terms:
+
+- The Nebius Token Factory logo in `assets/powered-by/` is a Nebius trademark. The MIT
+  licence does not cover it; if you fork the app into something else, check with Nebius
+  before you keep the mark.
+- The icons in `assets/icons/` are Gravity UI's, under their own MIT notice in that folder.
+- The fonts are bundled from Fontsource under the SIL Open Font License.

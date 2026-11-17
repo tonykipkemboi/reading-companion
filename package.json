@@ -109,6 +109,7 @@
       "enableCookieEncryption": true
     }
   },
+  "license": "MIT",
   "author": {
     "name": "Reading Companion contributors"
   },
