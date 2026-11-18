@@ -301,13 +301,34 @@
     if (state.pageCache && state.pageCache.url === url && Date.now() - state.pageCache.at < 20000) return state.pageCache.page;
     const reply = await pageRequest({ type: 'get-page', requestId: uid() });
     const page = reply?.page || { url, title: el.view.getTitle?.() || '', text: '' };
+    if (page.kind === 'pdf') {
+      // The PDF viewer shows the pages but keeps their text; the background process reads it.
+      const view = el.view;
+      const pdf = await api.readPdf(view.getWebContentsId()).catch(() => ({ ok: false, reason: 'unreadable' }));
+      if (view !== el.view || currentUrl() !== url) return page; // the reader moved on meanwhile
+      page.url = url;
+      page.text = pdf.ok ? pdf.text : '';
+      page.title = (pdf.ok && pdf.title) || page.title || url.split(/[?#]/)[0].split('/').pop() || '';
+      page.pdf = pdf.ok ? { pages: pdf.pages, pagesRead: pdf.pagesRead } : { problem: pdf.reason, pages: pdf.pages || 0 };
+    }
     state.pageCache = { url, at: Date.now(), page };
     return page;
   }
 
+  // A PDF is shown by the app's own viewer page. Everywhere the reader or the model sees
+  // an address, it is the PDF's own address, not the viewer's.
+  function shownUrl(url) {
+    if (typeof url !== 'string' || !url.startsWith('reader-pdf://viewer/')) return url;
+    try {
+      return new URL(url).searchParams.get('src') || url;
+    } catch {
+      return url;
+    }
+  }
+
   function currentUrl() {
     try {
-      return state.viewReady ? el.view.getURL() : state.lastUrl;
+      return state.viewReady ? shownUrl(el.view.getURL()) : state.lastUrl;
     } catch {
       return state.lastUrl;
     }
@@ -459,7 +480,7 @@
       let url = owner.lastUrl;
       let title = owner.title;
       try {
-        url = view.getURL() || url;
+        url = shownUrl(view.getURL()) || url;
         title = view.getTitle() || title;
       } catch { /* not attached */ }
       if (url && url !== 'about:blank') owner.lastUrl = url;
@@ -481,13 +502,14 @@
       renderTabs();
     });
     view.addEventListener('did-navigate', (event) => {
-      if (event.url && event.url !== 'about:blank') owner.lastUrl = event.url;
+      const url = shownUrl(event.url);
+      if (url && url !== 'about:blank') owner.lastUrl = url;
       owner.pageCache = null;
       owner.live = null;
       owner.failed = '';
       owner.title = '';
       if (onScreen()) {
-        showUrl(event.url);
+        showUrl(url);
         hidePill();
         closeThread();
       }
@@ -502,10 +524,10 @@
     });
     view.addEventListener('did-navigate-in-page', (event) => {
       if (!event.isMainFrame) return;
-      owner.lastUrl = event.url || owner.lastUrl;
+      owner.lastUrl = shownUrl(event.url) || owner.lastUrl;
       owner.pageCache = null;
       if (!onScreen()) return;
-      showUrl(event.url);
+      showUrl(owner.lastUrl);
       updateNav();
     });
     view.addEventListener('did-fail-load', (event) => {

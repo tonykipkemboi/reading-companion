@@ -17,7 +17,10 @@ if (process.env.COMPANION_USER_DATA) app.setPath('userData', path.resolve(proces
 const settingsFile = () => path.join(app.getPath('userData'), 'settings.txt');
 loadSettingsFile(settingsFile());
 
-const { resolveModel, streamAnswer, checkKey, hasImages, settings: inferenceSettings } = require('./inference');
+const { resolveModel, streamAnswer, checkKey, hasImages, settings: inferenceSettings, PAGE_CHAR_BUDGET } = require('./inference');
+const { registerPdfScheme, showPdfsInViewer, pdfAddress, pdfText, closeWorkers } = require('./pdf');
+
+registerPdfScheme(); // has to happen before the app is ready
 
 const PAGE_PRELOAD = path.join(ROOT, 'src', 'page', 'page-preload.js');
 const SHELL_PRELOAD = path.join(ROOT, 'src', 'shell', 'shell-preload.js');
@@ -88,6 +91,7 @@ function createWindow() {
   win.loadFile(path.join(ROOT, 'src', 'shell', 'index.html'));
   win.on('closed', () => {
     win = null;
+    closeWorkers();
   });
 
   // The shell itself never navigates anywhere.
@@ -121,6 +125,11 @@ function configureReaderSession() {
   reader.setPermissionRequestHandler((_wc, permission, callback) => callback(permission === 'fullscreen'));
   reader.setPermissionCheckHandler((_wc, permission) => permission === 'fullscreen');
   reader.on('will-download', (event) => event.preventDefault());
+  // PDFs open in the app's own viewer, where their text can be highlighted and explained.
+  showPdfsInViewer(reader, (id) => {
+    const tab = webContents.fromId(Number(id));
+    return tab && tab.getType() === 'webview' && win && !win.isDestroyed() && tab.hostWebContents === win.webContents ? tab : null;
+  });
 }
 
 app.on('web-contents-created', (_event, contents) => {
@@ -294,6 +303,16 @@ function registerIpc() {
       image = image.resize({ width: Math.round(size.width * scale), height: Math.round(size.height * scale), quality: 'best' });
     }
     return `data:image/jpeg;base64,${image.toJPEG(88).toString('base64')}`;
+  });
+
+  // Text of the PDF a tab is showing. The window names the tab; the address comes from the
+  // tab itself, so nothing here can be pointed at an address the reader did not open.
+  handle('pdf:text', async (_event, { webContentsId }) => {
+    const target = webContents.fromId(Number(webContentsId));
+    if (!target || target.getType() !== 'webview' || target.hostWebContents !== win.webContents) return { ok: false, reason: 'unreadable' };
+    const url = pdfAddress(target.getURL()); // the PDF itself, when the tab shows it in the app's viewer
+    if (!isWebUrl(url)) return { ok: false, reason: 'unreadable' };
+    return pdfText(session.fromPartition(PARTITION), url, PAGE_CHAR_BUDGET);
   });
 
   ipcMain.on('ask:start', async (event, request) => {

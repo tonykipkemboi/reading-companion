@@ -125,11 +125,36 @@ function publicAddress(url) {
   }
 }
 
+// A PDF's text is read separately from the page, so the model is told how much of it
+// arrived, or why none did, instead of being left to guess from an empty page.
+const PDF_PROBLEMS = {
+  'no-text': 'it has no text layer, so it is probably a scan',
+  locked: 'it is password-protected',
+  'too-large': 'the file is too large',
+  unreachable: 'the file could not be downloaded again',
+};
+function pdfNote(pdf) {
+  if (!pdf || typeof pdf !== 'object') return '';
+  const count = (value) => Math.max(0, Math.min(100000, Math.trunc(Number(value)) || 0));
+  if (pdf.problem) {
+    const why = PDF_PROBLEMS[pdf.problem] || 'it could not be opened';
+    return `The page is a PDF and its text could not be read: ${why}. Tell the reader that in one plain sentence, and that they can still press Snip and drag over any part of it to ask about that part. Do not guess at the content.`;
+  }
+  const pages = count(pdf.pages);
+  const read = count(pdf.pagesRead);
+  if (!pages) return '';
+  return read < pages
+    ? `The page is a PDF with ${pages} pages. Only the text of pages 1 to ${read} is included above; say so if the answer may lie further on.`
+    : `The page is a PDF with ${pages} ${pages === 1 ? 'page' : 'pages'}; all of its text is included above.`;
+}
+
 // Turns the renderer's structured request into Chat Completions messages.
 function buildMessages({ name, page, focus, turns }) {
   const parts = [];
   const title = fromPage(page?.title, 300).replace(/["\n]/g, ' ');
   parts.push(`<page url="${publicAddress(page?.url)}" title="${title}">\n${fromPage(page?.text, PAGE_CHAR_BUDGET)}\n</page>`);
+  const pdf = pdfNote(page?.pdf);
+  if (pdf) parts.push(pdf);
 
   if (focus?.type === 'selection') {
     parts.push(`The reader highlighted this passage:\n<highlight>\n${fromPage(focus.text, 6000)}\n</highlight>`);
@@ -268,4 +293,4 @@ async function checkKey(apiKey) {
   }
 }
 
-module.exports = { settings, resolveModel, streamAnswer, buildMessages, checkKey, hasImages, DEFAULT_MODEL };
+module.exports = { settings, resolveModel, streamAnswer, buildMessages, checkKey, hasImages, DEFAULT_MODEL, PAGE_CHAR_BUDGET };

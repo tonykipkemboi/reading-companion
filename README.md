@@ -15,6 +15,8 @@ what lost you, and a model explains it right there. Powered by
 - **Follow up on an answer.** Highlight part of an answer to ask about just that, or add a
   snip, a file or a pasted screenshot to your next question.
 - **Ask the page.** Click the companion for a summary or any question about the page.
+- **PDFs too.** A PDF opens in the app's own page view, so highlighting, notes and
+  questions work on a paper the way they do on a web page.
 - **Notes stay put.** A closed note leaves a marker beside its passage; click it to reopen
   the conversation. Notes last until you leave or reload the page.
 - **Tabs**, each with its own notes.
@@ -46,7 +48,8 @@ Windows and Linux) to change the key or any setting.
   the app window or any web page.
 - **When you ask a question**, the page's text (up to 60,000 characters), its address
   without the query string, what you highlighted or snipped, and your question go to
-  Nebius. That includes pages you are signed in to. Nothing is sent until you ask.
+  Nebius. That includes pages you are signed in to. Nothing is sent until you ask. A PDF
+  is downloaded by the app itself, with the tab's cookies, so it can show and read it.
 - Nothing else is collected. There is no telemetry and no account.
 
 ## Run from source
@@ -141,6 +144,7 @@ Use Ctrl in place of Cmd on Windows and Linux.
 src/main/    background process: window, menu, Token Factory client, settings file
 src/page/    script injected into each page: reports highlights and tracks them
 src/shell/   the app window: toolbar, notes, snip tool, companions, home screen
+src/pdf/     the PDF page view, and a hidden window that reads a PDF's full text
 ```
 
 Questions go to Chat Completions with streaming on. Web pages are treated as hostile: the
@@ -156,12 +160,18 @@ app, edit `src/shell/theme.css`.
 - A page can tell which of its passages you asked about, and its wording can mislead the
   model. An answer is only as trustworthy as the page.
 - Text inside frames from another site cannot be highlighted; snip it instead.
-- PDFs and downloads do not open. Tabs are not restored after a restart.
+- The PDF view is for reading: links inside a PDF are not clickable, and there is no
+  print, download or thumbnail strip. A scanned PDF has no text to highlight; snip it.
+  A PDF the view cannot open (password-protected, for example) falls back to the
+  browser's built-in viewer, where only Snip works.
+- Downloads do not open. Tabs are not restored after a restart.
 
 ## Licence
 
-The code is under the [MIT licence](LICENSE). Three things keep their own terms:
+The code is under the [MIT licence](LICENSE). Four things keep their own terms:
 
+- PDFs are shown and read with Mozilla's [pdf.js](https://mozilla.github.io/pdf.js/),
+  under the Apache License 2.0.
 - The Nebius Token Factory logo in `assets/powered-by/` is a Nebius trademark and is not
   covered. Check with Nebius before keeping it in a fork.
 - The icons are [Gravity UI](https://gravity-ui.com/icons)'s, MIT, with their notice in

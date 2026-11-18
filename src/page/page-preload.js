@@ -282,6 +282,9 @@ function pageText() {
   const description = document.querySelector('meta[name="description"]')?.getAttribute('content') || '';
   return {
     url: location.href,
+    // A PDF's full text is not in the page (only the pages drawn so far are), so the app
+    // reads it another way. That covers the app's own PDF viewer and Chromium's.
+    kind: location.protocol === 'reader-pdf:' || document.contentType === 'application/pdf' ? 'pdf' : 'html',
     title: document.title,
     description: clean(description, 400),
     text: String(best).replace(/[ \t ]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 60000),

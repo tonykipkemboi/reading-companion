@@ -1,0 +1,82 @@
+/* The app's own PDF page view. Pages are drawn by pdf.js; the text layer on top of each
+   page is real text, so highlighting works the way it does on a web page. */
+:root {
+  color-scheme: only light;
+  --ink: #091E19;
+  --pink: 255 122 184;
+}
+
+html {
+  background: #CDEADB;
+}
+
+body {
+  margin: 0;
+  font: 14px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink);
+}
+
+#pages {
+  --page-margin: 0;
+  --page-border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 24px 110px;
+}
+
+.pdfViewer .page {
+  flex: none;
+  background: #fff;
+  outline: 2px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.pdfViewer .page .canvasWrapper {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+}
+
+/* The page shows through a highlight, as it does under a highlighter pen. */
+.textLayer ::selection {
+  background: rgb(var(--pink) / 0.42);
+  color: transparent;
+}
+
+.textLayer span::highlight(rc-pin),
+.textLayer br::highlight(rc-pin) {
+  background-color: rgb(var(--pink) / 0.5) !important;
+  color: transparent !important;
+}
+
+.textLayer span::highlight(rc-past),
+.textLayer br::highlight(rc-past) {
+  background-color: rgb(var(--pink) / 0.26) !important;
+  color: transparent !important;
+}
+
+#status {
+  position: fixed;
+  inset: 40% 0 auto;
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+#count {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  padding: 4px 10px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--ink);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  pointer-events: none;
+}
